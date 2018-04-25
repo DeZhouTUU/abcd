@@ -18,7 +18,7 @@ public class PopLayout extends RelativeLayout {
     public PopLayout(final Context context) {
         super(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.layout_pop, null, false);
+        View v = inflater.inflate(R.layout.toucherlayout, null, false);
         TextView mText = (TextView)v.findViewById(R.id.btn_pop);
         mText.setOnClickListener(new OnClickListener() {
             @Override

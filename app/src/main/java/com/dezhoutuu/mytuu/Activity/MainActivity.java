@@ -3,28 +3,18 @@ package com.dezhoutuu.mytuu.Activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dezhoutuu.mytuu.Application.BaseActivity;
-import com.dezhoutuu.mytuu.Application.MyService;
+import com.dezhoutuu.mytuu.Application.MainService;
 import com.dezhoutuu.mytuu.R;
 import com.dezhoutuu.mytuu.Utils.TUUToast;
-import com.dezhoutuu.mytuu.Widget.PopLayout;
-import com.yhao.floatwindow.FloatWindow;
-import com.yhao.floatwindow.MoveType;
-import com.yhao.floatwindow.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +23,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity {
-
 
     @BindView(R.id.et_use_name)
     EditText etUseName;
@@ -63,7 +52,20 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.btn_login)
     public void login(){
-
+        if (Settings.canDrawOverlays(MainActivity.this))
+        {
+            Intent intent = new Intent(MainActivity.this,MainService.class);
+            Toast.makeText(MainActivity.this,"已开启Toucher",Toast.LENGTH_SHORT).show();
+            startService(intent);
+            finish();
+        }else
+        {
+            //若没有权限，提示获取.
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            Toast.makeText(MainActivity.this,"需要取得权限以使用悬浮窗",Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void getPermissions(){
