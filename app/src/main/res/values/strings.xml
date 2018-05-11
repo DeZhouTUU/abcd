@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">myTuu</string>
+    <string name="ticker_text">不要关掉</string>
 </resources>

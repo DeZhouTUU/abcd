@@ -32,9 +32,8 @@ public class MainActivity extends BaseActivity {
     Button btnLogin;
 
     private List<String> mPermissionList = new ArrayList<>();
-    // 所需的全部权限
+    //            Manifest.permission.WRITE_EXTERNAL_STORAGE,所需的全部权限
     private static final String[] PERMISSIONS = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.SYSTEM_ALERT_WINDOW
     };

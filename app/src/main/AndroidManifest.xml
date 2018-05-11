@@ -23,9 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".Activity.ProductListActivity"></activity>
         <service android:name=".Application.MainService" >
+            <intent-filter android:priority="1000" >
+                <action android:name="com.dezhoutuu.myservice" />
+            </intent-filter>
         </service>
+        <service android:name=".Application.NewMainService" ></service>
     </application>
 
 </manifest>
