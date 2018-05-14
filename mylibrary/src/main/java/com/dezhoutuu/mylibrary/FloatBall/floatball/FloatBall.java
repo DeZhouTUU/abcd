@@ -345,4 +345,9 @@ public class FloatBall extends FrameLayout implements ICarrier {
             mSleepRunnable.postDelaySelf(this, 3000);
         }
     }
+
+    public void setImage(Drawable md){
+        Util.setBackground(imageView, md);
+    }
+
 }

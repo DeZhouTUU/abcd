@@ -18,17 +18,21 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.dezhoutuu.mylibrary.FloatBall.FloatBallManager;
 import com.dezhoutuu.mylibrary.FloatBall.floatball.FloatBallCfg;
 import com.dezhoutuu.mylibrary.FloatBall.menu.FloatMenuCfg;
+import com.dezhoutuu.mylibrary.FloatBall.menu.MenuItem;
 import com.dezhoutuu.mylibrary.FloatBall.utils.DensityUtil;
 import com.dezhoutuu.mytuu.R;
 import com.dezhoutuu.mytuu.Utils.MyLog;
-import com.dezhoutuu.mytuu.Widget.MyPopLayoutManager;
+import com.dezhoutuu.mytuu.Utils.TUUToast;
 
 public class MainService extends Service {
 
     private static final String TAG = "MainService";
-    private MyPopLayoutManager mMyPopLayoutManager;
+    //    private MyPopLayoutManager mFloatBallManager;
+    private FloatBallManager mFloatBallManager;
+    private FloatBallManager mFloatBallManagerMenu;
 
     ConstraintLayout toucherLayout;
     WindowManager.LayoutParams params;
@@ -43,18 +47,17 @@ public class MainService extends Service {
 
     //不与Activity进行绑定.
     @Override
-    public IBinder onBind(Intent intent)
-    {
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
-        Log.i(TAG,"MainService Created");
+        Log.i(TAG, "MainService Created");
 //        createToucher();
         initSinglePageFloatball(false);
+        initSinglePageFloatballMenu();
     }
 
     private void initSinglePageFloatball(boolean showMenu) {
@@ -73,57 +76,87 @@ public class MainService extends Service {
             FloatMenuCfg menuCfg = new FloatMenuCfg(menuSize, menuItemSize);
             //3 生成floatballManager
             //必须传入Activity
-            mMyPopLayoutManager = new MyPopLayoutManager(this, ballCfg, menuCfg);
+            mFloatBallManager = new FloatBallManager(this, ballCfg, menuCfg);
 //            addFloatMenuItem();
         } else {
             //必须传入Activity
-            mMyPopLayoutManager = new MyPopLayoutManager(this, ballCfg);
+            mFloatBallManager = new FloatBallManager(this, ballCfg);
         }
-        mMyPopLayoutManager.setOnFloatBallClickListener(new MyPopLayoutManager.OnFloatBallClickListener() {
+        mFloatBallManager.setOnFloatBallClickListener(new FloatBallManager.OnFloatBallClickListener() {
             @Override
             public void onFloatBallClick() {
-                if(!isStart){
-                    mMyPopLayoutManager.setFloatBallImage(getDrawable(R.drawable.ic_email));
-                }else {
-                    mMyPopLayoutManager.setFloatBallImage(getDrawable(R.drawable.ic_floatball));
+                if (!isStart) {
+                    mFloatBallManager.setFloatBallImage(getDrawable(R.drawable.ic_email));
+                } else {
+                    mFloatBallManager.setFloatBallImage(getDrawable(R.drawable.ic_floatball));
                 }
                 isStart = !isStart;
             }
         });
-        mMyPopLayoutManager.show();
+        mFloatBallManager.show();
     }
 
-//    private void addFloatMenuItem() {
-//        MenuItem personItem = new MenuItem(getDrawable(R.drawable.ic_weixin)) {
+    private void initSinglePageFloatballMenu() {
+        //1 初始化悬浮球配置，定义好悬浮球大小和icon的drawable
+        int ballSize = DensityUtil.dip2px(this, 45);
+//        Drawable ballIcon = BackGroudSeletor.getdrawble("ic_floatball", this);
+        Drawable ballIcon = getDrawable(R.drawable.ic_floatball);
+        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.RIGHT_CENTER);
+        //设置悬浮球不半隐藏
+//        ballCfg.setHideHalfLater(false);
+        //2 需要显示悬浮菜单
+        //2.1 初始化悬浮菜单配置，有菜单item的大小和菜单item的个数
+        int menuSize = DensityUtil.dip2px(this, 180);
+        int menuItemSize = DensityUtil.dip2px(this, 40);
+        FloatMenuCfg menuCfg = new FloatMenuCfg(menuSize, menuItemSize);
+        //3 生成floatballManager
+        //必须传入Activity
+        mFloatBallManagerMenu = new FloatBallManager(this, ballCfg, menuCfg);
+        addFloatMenuItem();
+//        mFloatBallManagerMenu.setOnFloatBallClickListener(new FloatBallManager.OnFloatBallClickListener() {
 //            @Override
-//            public void action() {
-//                new TUUToast(MainService.this,"打开微信");
-//                mMyPopLayoutManager.closeMenu();
+//            public void onFloatBallClick() {
+//                if (!isStart) {
+//                    mFloatBallManagerMenu.setFloatBallImage(getDrawable(R.drawable.ic_email));
+//                } else {
+//                    mFloatBallManagerMenu.setFloatBallImage(getDrawable(R.drawable.ic_floatball));
+//                }
+//                isStart = !isStart;
 //            }
-//        };
-//        MenuItem walletItem = new MenuItem(getDrawable(R.drawable.ic_weibo)) {
-//            @Override
-//            public void action() {
-//                new TUUToast(MainService.this,"打开微博");
-//            }
-//        };
-//        MenuItem settingItem = new MenuItem(getDrawable(R.drawable.ic_email)) {
-//            @Override
-//            public void action() {
-//                new TUUToast(MainService.this,"打开邮箱");
-//                mMyPopLayoutManager.closeMenu();
-//            }
-//        };
-//        mMyPopLayoutManager.addMenuItem(personItem)
-//                .addMenuItem(walletItem)
-//                .addMenuItem(personItem)
-//                .addMenuItem(walletItem)
-//                .addMenuItem(settingItem)
-//                .buildMenu();
-//    }
+//        });
+        mFloatBallManagerMenu.show();
+    }
 
-    private void createToucher()
-    {
+    private void addFloatMenuItem() {
+        MenuItem personItem = new MenuItem(getDrawable(R.drawable.ic_weixin)) {
+            @Override
+            public void action() {
+                new TUUToast(MainService.this, "打开微信");
+                mFloatBallManagerMenu.closeMenu();
+            }
+        };
+        MenuItem walletItem = new MenuItem(getDrawable(R.drawable.ic_weibo)) {
+            @Override
+            public void action() {
+                new TUUToast(MainService.this, "打开微博");
+            }
+        };
+        MenuItem settingItem = new MenuItem(getDrawable(R.drawable.ic_email)) {
+            @Override
+            public void action() {
+                new TUUToast(MainService.this, "打开邮箱");
+                mFloatBallManagerMenu.closeMenu();
+            }
+        };
+        mFloatBallManagerMenu.addMenuItem(personItem)
+                .addMenuItem(walletItem)
+                .addMenuItem(personItem)
+                .addMenuItem(walletItem)
+                .addMenuItem(settingItem)
+                .buildMenu();
+    }
+
+    private void createToucher() {
         //赋值WindowManager&LayoutParam.
         params = new WindowManager.LayoutParams();
         windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
@@ -145,43 +178,41 @@ public class MainService extends Service {
 
         LayoutInflater inflater = LayoutInflater.from(getApplication());
         //获取浮动窗口视图所在布局.
-        toucherLayout = (ConstraintLayout) inflater.inflate(R.layout.toucherlayout,null);
+        toucherLayout = (ConstraintLayout) inflater.inflate(R.layout.toucherlayout, null);
         //添加toucherlayout
-        windowManager.addView(toucherLayout,params);
+        windowManager.addView(toucherLayout, params);
 
-        Log.i(TAG,"toucherlayout-->left:" + toucherLayout.getLeft());
-        Log.i(TAG,"toucherlayout-->right:" + toucherLayout.getRight());
-        Log.i(TAG,"toucherlayout-->top:" + toucherLayout.getTop());
-        Log.i(TAG,"toucherlayout-->bottom:" + toucherLayout.getBottom());
+        Log.i(TAG, "toucherlayout-->left:" + toucherLayout.getLeft());
+        Log.i(TAG, "toucherlayout-->right:" + toucherLayout.getRight());
+        Log.i(TAG, "toucherlayout-->top:" + toucherLayout.getTop());
+        Log.i(TAG, "toucherlayout-->bottom:" + toucherLayout.getBottom());
 
         //主动计算出当前View的宽高信息.
-        toucherLayout.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+        toucherLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         //用于检测状态栏高度.
-        int resourceId = getResources().getIdentifier("status_bar_height","dimen","android");
-        if (resourceId > 0)
-        {
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
-        Log.i(TAG,"状态栏高度为:" + statusBarHeight);
+        Log.i(TAG, "状态栏高度为:" + statusBarHeight);
 
         //浮动窗口按钮.
         imageButton1 = (ImageButton) toucherLayout.findViewById(R.id.imageButton1);
 
         imageButton1.setOnClickListener(new View.OnClickListener() {
             long[] hints = new long[2];
+
             @Override
             public void onClick(View v) {
-                Log.i(TAG,"点击了");
-                System.arraycopy(hints,1,hints,0,hints.length -1);
-                hints[hints.length -1] = SystemClock.uptimeMillis();
-                if (SystemClock.uptimeMillis() - hints[0] >= 700)
-                {
-                    Log.i(TAG,"要执行");
-                    Toast.makeText(MainService.this,"连续点击两次以退出",Toast.LENGTH_SHORT).show();
-                }else
-                {
-                    Log.i(TAG,"即将关闭");
+                Log.i(TAG, "点击了");
+                System.arraycopy(hints, 1, hints, 0, hints.length - 1);
+                hints[hints.length - 1] = SystemClock.uptimeMillis();
+                if (SystemClock.uptimeMillis() - hints[0] >= 700) {
+                    Log.i(TAG, "要执行");
+                    Toast.makeText(MainService.this, "连续点击两次以退出", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i(TAG, "即将关闭");
                     stopSelf();
                 }
             }
@@ -192,17 +223,15 @@ public class MainService extends Service {
             public boolean onTouch(View v, MotionEvent event) {
                 params.x = (int) event.getRawX() - 150;
                 params.y = (int) event.getRawY() - 150 - statusBarHeight;
-                windowManager.updateViewLayout(toucherLayout,params);
+                windowManager.updateViewLayout(toucherLayout, params);
                 return false;
             }
         });
     }
 
     @Override
-    public void onDestroy()
-    {
-        if (imageButton1 != null)
-        {
+    public void onDestroy() {
+        if (imageButton1 != null) {
             windowManager.removeView(toucherLayout);
         }
         stopForeground(true);
@@ -219,5 +248,6 @@ public class MainService extends Service {
         flags = START_STICKY;
         return super.onStartCommand(intent, flags, startId);
     }
+
 
 }

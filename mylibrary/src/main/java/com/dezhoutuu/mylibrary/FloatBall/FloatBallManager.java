@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
@@ -122,16 +123,16 @@ public class FloatBallManager {
     }
 
     public void show() {
-        if (mActivity == null) {
-            if (mPermission == null) {
-                return;
-            }
-            if (!mPermission.hasFloatBallPermission(mContext)) {
-                mPermission.onRequestFloatBallPermission();
-                return;
-            }
-        }
-        if (isShowing) return;
+//        if (mActivity == null) {
+//            if (mPermission == null) {
+//                return;
+//            }
+//            if (!mPermission.hasFloatBallPermission(mContext)) {
+//                mPermission.onRequestFloatBallPermission();
+//                return;
+//            }
+//        }
+//        if (isShowing) return;
         isShowing = true;
         floatBall.setVisibility(View.VISIBLE);
         statusBarView.attachToWindow(mWindowManager);
@@ -185,13 +186,13 @@ public class FloatBallManager {
     }
 
     public interface IFloatBallPermission {
-        /**
-         * request the permission of floatball,just use {@link #requestFloatBallPermission(Activity)},
-         * or use your custom method.
-         *
-         * @return return true if requested the permission
-         * @see #requestFloatBallPermission(Activity)
-         */
+//        /**
+//         * request the permission of floatball,just use {@link #requestFloatBallPermission(Activity)},
+//         * or use your custom method.
+//         *
+//         * @return return true if requested the permission
+//         * @see #requestFloatBallPermission(Activity)
+//         */
         boolean onRequestFloatBallPermission();
 
         /**
@@ -204,6 +205,10 @@ public class FloatBallManager {
         /**
          * request floatball permission
          */
-        void requestFloatBallPermission(Activity activity);
+        void requestFloatBallPermission(Context activity);
+    }
+
+    public void setFloatBallImage(Drawable md){
+        floatBall.setImage(md);
     }
 }

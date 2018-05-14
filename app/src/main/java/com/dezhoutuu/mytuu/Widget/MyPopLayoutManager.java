@@ -163,7 +163,7 @@ public class MyPopLayoutManager {
         if (!isShowing) return;
         isShowing = false;
         floatBall.detachFromWindow(mWindowManager);
-        floatMenu.detachFromWindow(mWindowManager);
+//        floatMenu.detachFromWindow(mWindowManager);
 //        statusBarView.detachFromWindow(mWindowManager);
     }
 
